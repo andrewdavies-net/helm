@@ -10,9 +10,9 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 Once Helm is set up properly, add the repo as follows:
 
 ```console
-helm repo add andrewdavies https://charts.andrewdavies.net/helm-charts/
+helm repo add andrewdavies https://charts.andrewdavies.net
 ```
-To look directly at the [index file](https://charts.andrewdavies.net/helm-charts/index.yaml) 
+To look directly at the [index file](https://charts.andrewdavies.net/index.yaml) 
 
 ## Disclaimer 
 These charts are not offical, they were either created for personal use or are existing charts that got edited to suit my setup.
