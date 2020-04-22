@@ -3,6 +3,25 @@ entries:
   factorio:
   - apiVersion: v1
     appVersion: 0.17.79
+    created: "2020-04-22T09:24:08.864460817Z"
+    description: Factorio dedicated server.
+    digest: ccf638345cdfd04823d75edd339e3f6be3275afef2e8cf6faa4384bd59c69236
+    home: https://www.factorio.com/
+    icon: https://us1.factorio.com/assets/img/factorio-logo.png
+    keywords:
+    - game
+    - server
+    maintainers:
+    - email: andrew@andrewdavies.net
+      name: Andrew Davies
+    name: factorio
+    sources:
+    - https://github.com/factoriotools/factorio-docker.git
+    urls:
+    - https://github.com/andrewdavies-net/helm-charts/releases/download/factorio-1.2.0/factorio-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v1
+    appVersion: 0.17.79
     created: "2020-04-22T08:54:25.339371499Z"
     description: Factorio dedicated server.
     digest: a77b576169e3d0a51dc0eb31355335baf0ce9ac2bc65ccccd192832b27f52d28
