@@ -2,7 +2,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ include "factorio.fullname" . }}
+  name: {{ include "factorio.fullname" . }}-data
   labels:
     app: {{ include "factorio.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
