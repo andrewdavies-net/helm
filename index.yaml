@@ -1,5 +1,25 @@
 apiVersion: v1
 entries:
+  factorio:
+  - apiVersion: v1
+    appVersion: 0.17.79
+    created: "2020-04-22T08:54:25.339371499Z"
+    description: Factorio dedicated server.
+    digest: a77b576169e3d0a51dc0eb31355335baf0ce9ac2bc65ccccd192832b27f52d28
+    home: https://www.factorio.com/
+    icon: https://us1.factorio.com/assets/img/factorio-logo.png
+    keywords:
+    - game
+    - server
+    maintainers:
+    - email: gtaylor@gc-taylor.com
+      name: gtaylor
+    name: factorio
+    sources:
+    - https://github.com/games-on-k8s/docker-factorio
+    urls:
+    - https://github.com/andrewdavies-net/helm-charts/releases/download/factorio-1.1.0/factorio-1.1.0.tgz
+    version: 1.1.0
   testchart1:
   - apiVersion: v1
     appVersion: "1.0"
