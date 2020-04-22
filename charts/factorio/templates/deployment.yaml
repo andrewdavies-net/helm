@@ -1,106 +1,64 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "factorio.fullname" . }}
+  name: {{ include "factorio.fullname" . }}
   labels:
-    app: {{ template "factorio.fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    {{- include "factorio.labels" . | nindent 4 }}
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ template "factorio.fullname" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "factorio.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ template "factorio.fullname" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}    
+        {{- include "factorio.selectorLabels" . | nindent 8 }}
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      - name: {{ template "factorio.fullname" . }}
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: Always
-        resources:
-{{ toYaml .Values.resources | indent 10 }}
-        env:
-        - name: FACTORIO_SERVER_NAME
-          value: {{ .Values.factorioServer.name | quote }}
-        - name: FACTORIO_DESCRIPTION
-          value: {{ .Values.factorioServer.description | quote }}
-        - name: FACTORIO_PORT
-          value: {{ .Values.factorioServer.port | quote }}
-        - name: FACTORIO_MAX_PLAYERS
-          value: {{ .Values.factorioServer.maxPlayers | quote }}
-        - name: FACTORIO_IS_PUBLIC
-          value: {{ .Values.factorioServer.isPublic | quote }}
-        - name: FACTORIO_REQUIRE_USER_VERIFICATION
-          value: {{ .Values.factorioServer.verifyIdentity | quote }}
-        - name: FACTORIO_ALLOW_COMMANDS
-          value: {{ .Values.factorioServer.allowCommands | quote }}
-        - name: FACTORIO_NO_AUTO_PAUSE
-          value: {{ .Values.factorioServer.noAutoPause | quote }}
-        - name: FACTORIO_AUTOSAVE_INTERVAL
-          value: {{ .Values.factorioServer.autosave.interval | quote }}
-        - name: FACTORIO_AUTOSAVE_SLOTS
-          value: {{ .Values.factorioServer.autosave.slots | quote }}
-
-        {{- if .Values.factorioServer.password }}
-        - name: FACTORIO_GAME_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "factorio.fullname" . }}
-              key: server-password
-        {{- end }}
-
-        {{- if .Values.factorioServer.isPublic }}
-        - name: FACTORIO_USER_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "factorio.fullname" . }}
-              key: factorio-username
-        - name: FACTORIO_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "factorio.fullname" . }}
-              key: factorio-password
-        {{- end }}
-
-        {{- if .Values.factorioServer.rcon.enabled }}
-        - name: FACTORIO_RCON_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "factorio.fullname" . }}
-              key: rcon-password
-        {{- end }}
-
-        ports:
-        - name: factorio
-          containerPort: 34197
-          protocol: UDP
-        {{- if .Values.factorioServer.rcon.enabled }}
-        - name: rcon
-          containerPort: {{ .Values.factorioServer.rcon.port }}
-          protocol: TCP
-        {{- end }}
-        volumeMounts:
-        - name: saves
-          mountPath: /opt/factorio/saves
-        - name: mods
-          mountPath: /opt/factorio/mods
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - name: factorio
+            containerPort: {{ .Values.factorioServer.port }}
+            protocol: UDP
+          {{- if .Values.factorioServer.rcon.enabled }}
+          - name: rcon
+            containerPort: {{ .Values.factorioServer.rcon.port }}
+            protocol: TCP
+          {{- end }}
+          volumeMounts:
+            - name: factorio-data
+              mountPath: /factorio
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-      - name: saves
-      {{- if .Values.persistence.savedGames.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ template "factorio.fullname" . }}-savedgames
-      {{- else }}
-        emptyDir: {}
+          - name: factorio-data
+          {{- if .Values.persistence.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ include "factorio.fullname" . }}-data{{- end }}
+          {{- else }}
+            emptyDir: {}
+          {{ end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
-      - name: mods
-      {{- if .Values.persistence.mods.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ template "factorio.fullname" . }}-mods
-      {{- else }}
-        emptyDir: {}
-      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+
+

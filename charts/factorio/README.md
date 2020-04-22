@@ -1,73 +1,132 @@
-This is a fork of the helm/stable/factorio chart as it had not been updated for a long time.
+factorio
+========
+Factorio dedicated server.
 
-# Factorio
+Current chart version is `2.0.0`
 
-[Factorio](https://www.factorio.com/) is a game in which you build and maintain factories.
+Source code can be found [here](https://www.factorio.com/)
 
-## Introduction
+Leveraging the [Factorio Docker Image](https://github.com/factoriotools/factorio-docker)
 
-This chart creates a single [Factorio Headless](https://www.factorio.com/download-headless) Pod, plus Services for the Factorio server and RCON.
+## Install;
 
-## Prerequisites
-
-- Kubernetes 1.4+ with Beta APIs enabled
-- PV provisioner support in the underlying infrastructure
-
-## Provider-specific Prerequisites
-
-Amazon's Elastic Loadbalancer lacks support for UDP. You'll need to set `factorioServer.ServiceType` to `NodePort` and expose the port that gets selected (see `kubectl describe svc <servicename>`) via a security group. You may need to do something similar for certain bare metal deployments.
-
-You need not worry about this on Google Cloud Platform.
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```bash
-$ helm install --name my-release stable/factorio
+```shell
+$ helm repo add andrewdaviesnet https://charts.andrewdavies.net
+$ helm install andrewdaviesnet/factorio
 ```
 
-This command deploys a Factorio dedicated server with sane defaults.
+Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
-> **Tip**: List all releases using `helm list`
-
+```console
+helm install --name my-release -f values.yaml andrewdaviesnet/factorio
+```
 ## Uninstalling the Chart
 
 To uninstall/delete the `my-release` deployment:
 
-```bash
-$ helm delete my-release
+```console
+helm delete my-release --purge
 ```
 
-The command removes all the Kubernetes components associated with the chart and deletes the release.
 
-## Configuration
+## Chart Values
 
-Refer to [values.yaml](values.yaml) for the full run-down on defaults. These are a mixture of Kubernetes and Factorio-related directives that map to environment variables in [docker-factorio](https://github.com/games-on-k8s/docker-factorio).
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| factorioServer.port | int | `34197` |  |
+| factorioServer.rcon.enabled | bool | `false` |  |
+| factorioServer.rcon.port | int | `27015` |  |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"factoriotools/factorio"` |  |
+| image.tag | string | `"stable"` |  |
+| imagePullSecrets | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| persistence.enabled | bool | `true` |  |
+| persistence.size | string | `"1Gi"` |  |
+| podSecurityContext | object | `{}` |  |
+| replicaCount | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext | object | `{}` |  |
+| service.type | string | `"LoadBalancer"` |  |
+| tolerations | list | `[]` |  |
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-```bash
-$ helm install --name my-release \
-  --set factorioServer.factorioServer=My Server,ImageTag=0.15.39 \
-    stable/factorio
+# Setup
+Once installed you need to configure the server configuration. This helm chart is only a wrapper.
+
+
+# Finding The Factorio Pod Name
+To find the name of the pod running your Factorio server execute:
+
+```
+kubectl -n factorio get pods
 ```
 
-The above command deploys Factorio dedicated with a server name of `My Server` and docker-factorio image version `0.15.39`.
+# Accessing Factorio Data
+The container which runs the Factorio server stores data in `/factorio`.  
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+The `kubectl cp` command can be used to transfer files to / from the server:
 
-```bash
-$ helm install --name my-release -f values.yaml stable/factorio
+## Save File Example
+Example of transferring a save file to the server:
+
+```
+kubectl cp ./factorio-save.zip factorio/<factorio pod name>:/factorio/saves/
 ```
 
-> **Tip**: You can use the default [values.yaml](values.yaml)
+## Factorio Configuration File Example
+The same command can be used to tweak a Factorio server's 
+`server-settings.json` file.  
 
-## Persistence
+First download the config file to your local computer:
 
-The [docker-factorio](https://github.com/games-on-k8s/docker-factorio) image stores the saved games and mods under /opt/factorio.
+```
+kubectl cp factorio/<factorio pod name>:/factorio/config/server-settings.json .
+```
 
-By default a PersistentVolumeClaim is created and mounted for saves but not mods. In order to disable this functionality
-you can change the values.yaml to disable persistence under the sub-sections under `Persistence`.
+Edit the downloaded `server-settings.json` file which is now in your current 
+working directory.  
 
-> *"An emptyDir volume is first created when a Pod is assigned to a Node, and exists as long as that Pod is running on that node. When a Pod is removed from a node for any reason, the data in the emptyDir is deleted forever."*
+Then upload the edited config file back up to your Factorio server:
+
+```
+kubectl cp factorio/<factorio pod name>:/factorio/config/ ./server-settings.json
+```
+
+# Viewing Server Logs
+To view the Factorio server's logs run the following command on your local 
+computer:
+
+```
+kubectl -n factorio logs -l app=factorio --timestamps
+```
+
+# Running A Terminal On The Server
+To gain more detailed insight or simply to perform maintenance tasks it may be 
+useful to run a shell on the machine hosting your Factorio server.  
+
+To do so run the following on your local computer:
+
+```
+kubectl -n factorio exec -it <factorio pod name> -- /bin/sh
+```
+
+To exit this shell hit Ctrl + d.
+
+# Gracefully Shutting Down The Server
+When Kubernetes shuts down a pod it sends the SIGTERM signal to the main 
+process (In our case the Factorio server).  
+
+The Factorio server is built to save the game and exit when it receives a 
+SIGTERM signal.  
+
+Because of this no extra steps must be taken for a Factorio server to be 
+shut down gracefully.
+
+# Thanks 
+This helm chart is a combination of the following charts:
+* https://github.com/helm/charts/tree/master/stable/factorio
+* https://github.com/Noah-Huppert/k8s-factorio-server
