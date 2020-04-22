@@ -1,8 +1,6 @@
 factorio
 ========
-Factorio dedicated server.
-
-Current chart version is `2.0.0`
+Factorio k8s server.
 
 Source code can be found [here](https://www.factorio.com/)
 
