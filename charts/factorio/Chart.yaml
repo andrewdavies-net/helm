@@ -2,7 +2,7 @@ apiVersion: v2
 name: factorio
 version: 2.0.0
 appVersion: 0.17.79
-description: Factorio dedicated server.
+description: Factorio server on kubernetes
 type: application
 keywords:
 - game
@@ -10,7 +10,7 @@ keywords:
 home: https://www.factorio.com/
 icon: https://us1.factorio.com/assets/img/factorio-logo.png
 sources:
-- https://github.com/factoriotools/factorio-docker.git
+- https://github.com/factoriotools/factorio-docker
 maintainers:
 - name: Andrew Davies
   email: andrew@andrewdavies.net
