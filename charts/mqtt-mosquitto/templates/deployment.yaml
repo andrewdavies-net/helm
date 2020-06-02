@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mosquitto.fullname" . }}
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mosquitto.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mosquitto.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: mqtt
+              containerPort: {{ .Values.service.mqtt.port }}
+              protocol: TCP 
+            - name: mqtt-tls
+              containerPort: {{ .Values.service.mqtt.tlsport }}
+              protocol: TCP          
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.mqtt.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.mqtt.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: mosquitto-conf
+              mountPath: /mosquitto/config/mosquitto.conf
+              subPath: mosquitto.conf
+            - name: mosquitto-data
+              mountPath: /mosquitto/data
+              subPath: mosquitto/data
+            - name: certificates
+              mountPath: "/mosquitto/certs"
+              readOnly: true               
+      volumes:
+      - name: certificates
+        secret:
+          secretName: {{ include "mosquitto.fullname" . }}-cert
+          defaultMode: 0777
+      - name: mosquitto-conf
+        configMap:
+          name: {{ include "mosquitto.fullname" . }}-config
+      - name: mosquitto-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "mosquitto.fullname" . }}-data
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

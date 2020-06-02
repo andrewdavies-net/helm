@@ -1,0 +1,15 @@
+{{- if .Values.mosquitto.certmanager.enabled }}
+apiVersion: cert-manager.io/v1alpha3
+kind: Certificate
+metadata:
+  name: {{ include "mosquitto.fullname" . }}
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "mosquitto.fullname" . }}-cert
+  issuerRef:
+    name: {{ .Values.mosquitto.certmanager.clusterIssuer }}
+    kind: ClusterIssuer
+  dnsNames:
+  - {{ .Values.mosquitto.certmanager.dnsname }}
+{{- end -}}
