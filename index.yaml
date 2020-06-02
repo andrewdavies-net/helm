@@ -3,6 +3,25 @@ entries:
   factorio:
   - apiVersion: v1
     appVersion: 0.17.79
+    created: "2020-06-02T16:52:07.661539323Z"
+    description: Factorio server on kubernetes
+    digest: dd3d8cdc86680b6c9419e7dc62280e3e6d84708f1afdc714ae448dd40b6797c7
+    home: https://www.factorio.com/
+    icon: https://us1.factorio.com/assets/img/factorio-logo.png
+    keywords:
+    - game
+    - server
+    maintainers:
+    - email: andrew@andrewdavies.net
+      name: Andrew Davies
+    name: factorio
+    sources:
+    - https://github.com/factoriotools/factorio-docker
+    urls:
+    - https://github.com/andrewdavies-net/helm-charts/releases/download/factorio-1.0.2/factorio-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v1
+    appVersion: 0.17.79
     created: "2020-04-22T13:30:41.425614538Z"
     description: Factorio server on kubernetes
     digest: 126406da0453c729f2be076eeb175a770ada29e1b166abf3ba33ae49b0df8496
@@ -39,6 +58,26 @@ entries:
     urls:
     - https://github.com/andrewdavies-net/helm-charts/releases/download/factorio-1.0.0/factorio-1.0.0.tgz
     version: 1.0.0
+  mosquitto:
+  - apiVersion: v1
+    appVersion: 1.6.9
+    created: "2020-06-02T16:52:07.734724254Z"
+    description: Mosquitto MQTT server on Kubernetes
+    digest: b1a24f9581aad95d18b699b453d1bea4eb038b9fce72d5f1c5bb16d1b95a207b
+    home: https://mosquitto.org/
+    icon: https://mosquitto.org/images/mosquitto-text-side-28.png
+    keywords:
+    - Mosquitto
+    - MQTT
+    maintainers:
+    - email: andrew@andrewdavies.net
+      name: Andrew Davies
+    name: mosquitto
+    sources:
+    - https://hub.docker.com/_/eclipse-mosquitto?tab=description
+    urls:
+    - https://github.com/andrewdavies-net/helm-charts/releases/download/mosquitto-0.0.3/mosquitto-0.0.3.tgz
+    version: 0.0.3
   testchart1:
   - apiVersion: v1
     appVersion: "1.0"
