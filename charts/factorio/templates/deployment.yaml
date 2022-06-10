@@ -26,6 +26,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: UPDATE_MODS_ON_START
+            value: "false"
           ports:
           - name: factorio
             containerPort: {{ .Values.factorioServer.port }}
