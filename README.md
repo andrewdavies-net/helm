@@ -7,6 +7,7 @@ My personal helm charts for a selection of applications
 
 [Link to Chart Repo Index](https://charts.andrewdavies.net/index.yaml)
 
+This repo barely used anymore and not recommended. 
 
 ## Usage
 You are more than welcome to use any charts you find here. They are however for personal use so may not be fully featured or supportive of all environments.
