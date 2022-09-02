@@ -30,7 +30,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: UPDATE_MODS_ON_START
-            value: "false"
+            value: "true"
           ports:
           - name: factorio
             containerPort: {{ .Values.factorioServer.port }}
