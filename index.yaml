@@ -3,6 +3,25 @@ entries:
   factorio:
   - apiVersion: v1
     appVersion: 0.17.79
+    created: "2022-09-02T18:07:37.623202809Z"
+    description: Factorio server on kubernetes
+    digest: 06603fb47bc80bb3a1fb6621b3651e1149dc3fbcad37e873889fe502dcbc6d51
+    home: https://www.factorio.com/
+    icon: https://us1.factorio.com/assets/img/factorio-logo.png
+    keywords:
+    - game
+    - server
+    maintainers:
+    - email: andrew@andrewdavies.net
+      name: Andrew Davies
+    name: factorio
+    sources:
+    - https://github.com/factoriotools/factorio-docker
+    urls:
+    - https://github.com/andrewdavies-net/helm-charts/releases/download/factorio-2.1.0/factorio-2.1.0.tgz
+    version: 2.1.0
+  - apiVersion: v1
+    appVersion: 0.17.79
     created: "2022-09-02T15:07:27.550370875Z"
     description: Factorio server on kubernetes
     digest: 8baee466e68f5578463c129e960b7967aa7a5a5964d0c12eeca053af484c5657
