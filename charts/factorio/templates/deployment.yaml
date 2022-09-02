@@ -47,7 +47,7 @@ spec:
           - name: factorio-data
           {{- if .Values.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ include "factorio.fullname" . }}-data{{- end }}
+              claimName: {{ .Values.persistence.existingClaim }}
           {{- else }}
             emptyDir: {}
           {{ end }}
